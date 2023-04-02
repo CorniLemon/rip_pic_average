@@ -34,229 +34,133 @@ public:
     }
 };
 
-//class Line {//надо менять на массив массивов
-//    RGBTRIPLE** line = NULL;
-//    int Add;
+class Line {
+    BYTE* line = NULL;
+public:
+    Line(size_t n) {
+        line = new BYTE[n];
+    };
+
+    BYTE* data() {
+        return line;
+    };
+
+    void operator= (BYTE* line1) {
+        line = line1;
+    }
+    BYTE& operator[] (int i) {
+        return line[i];
+    }
+
+    ~Line() {
+        delete[] line;
+        line = NULL;
+    };
+};
+
+//class Pixel {
+//    BYTE* line;
+//    size_t ch;
 //public:
-//    Line(size_t n, int Add) {
-//        line = new RGBTRIPLE *[Add];
-//        for(int i=0; i<Add; ++i)
-//            line [i] = new RGBTRIPLE[n];
-//        this->Add = Add;
-//    };
+//    Pixel(BYTE* line, size_t ch)
+//        : line(line),
+//        ch(ch)
+//    {
+//    }
 //
-//    Line(size_t n) {
-//        line = new RGBTRIPLE * [1];
-//        line[0] = new RGBTRIPLE[n];
-//        this->Add = 1;
-//    };
-//
-//    RGBTRIPLE* data(int i) {
-//        return line[i];
-//    };
-//
-//    RGBTRIPLE* operator[](int i) {
-//        return line[i];
-//    };
-//
-//    ~Line() {
-//        for (int i = 0; i < Add; ++i)
-//            delete[] line[i];
-//        delete[] line;
-//        line = NULL;
-//    };
+//    BYTE& operator[] (int k) {
+//        return line[k];
+//    }
 //};
 //
-//void CreateLine2(Line line1, Line line2, int Add, LONG biWidth, int AAA, int num) {
-//    RGBTRIPLE Averege;
-//    int count=Add*Add;
-//    for (int i = 0; i < biWidth-AAA; ++i) {
-//        Averege.rgbtBlue = 0;
-//        Averege.rgbtGreen = 0;
-//        Averege.rgbtRed = 0;
-//        for (int a = 0; a < Add; ++a)
-//            for (int b = 0; b < Add; ++b){
-//                Averege.rgbtBlue += line1[a][b].rgbtBlue;
-//                Averege.rgbtGreen += line1[a][b].rgbtGreen;
-//                Averege.rgbtRed += line1[a][b].rgbtRed;
-//            }
-//        Averege.rgbtBlue /= count;
-//        Averege.rgbtGreen /= count;
-//        Averege.rgbtRed /= count;
-//        line2[0][i] = Averege;
+//class Line {
+//    BYTE* line;
+//    size_t w, ch;
+//public:
+//    Line(BYTE *line, size_t w, size_t ch)
+//        : line(line),
+//        w(w), ch(ch)
+//    {
 //    }
-//    if (AAA){
-//        int count = Add * num;
-//        for (int a = 0; a < num; ++a)
-//            for (int b = 0; b < Add; ++b) {
-//                Averege.rgbtBlue += line1[a][b].rgbtBlue;
-//                Averege.rgbtGreen += line1[a][b].rgbtGreen;
-//                Averege.rgbtRed += line1[a][b].rgbtRed;
-//            }
-//        Averege.rgbtBlue /= count;
-//        Averege.rgbtGreen /= count;
-//        Averege.rgbtRed /= count;
-//        line2[0][biWidth] = Averege;
-//    }
-//}
 //
-//void CreateLastLine2(Line line1, Line line2, int Add, LONG biWidth, int AAA, int numLine, int numColumn) {
+//    Pixel operator[] (int j) {
+//        return Pixel(line + j * ch, ch);
+//    }
+//};
+//
+//class Matr {
+//    BYTE* line = NULL;
+//    size_t h, w, ch;
+//public:
+//    Matr(size_t h, size_t w, size_t ch)
+//        : line(new BYTE[h * w * ch]),
+//        h(h), w(w), ch(ch)
+//    {
+//    }
+//
+//    BYTE* data() {
+//        return line;
+//    }
+//
+//    void operator= (BYTE* line1) {
+//        line = line1;
+//    }
+//    Line operator[] (int i) {
+//        return Line(line + i * w * ch, w, ch);
+//    }
+//
+//    BYTE& at(size_t i, size_t j, size_t k)
+//    {
+//        return line[(i * w + j) * ch + k];
+//    }
+//
+//    ~Matr() {
+//        delete[] line;
+//        line = NULL;
+//    }
+//
+//    operator void* ()
+//    {
+//        return line;
+//    }
+//};
+
+//void f()
+//{
+//    Matr m(100, 50, 3);
+//    m[0][0][0] = 5;
+//    fread(m, ...);
+//}
+
+//void CreateLine2(BYTE* line1, BYTE* line2, int Add, int WightInPix, FileWithDes f2, int lenghtInBytes, int lenghtForF2) {
 //    RGBTRIPLE Averege;
-//    int count = numColumn * Add;
-//    for (int i = 0; i < biWidth - AAA; ++i) {
+//    for (int j = 0; j < WightInPix; ++j) {//скорее всего косяк здесь
 //        Averege.rgbtBlue = 0;
 //        Averege.rgbtGreen = 0;
 //        Averege.rgbtRed = 0;
-//        for (int a = 0; a < numLine; ++a)
-//            for (int b = 0; b < Add; ++b){
-//                Averege.rgbtBlue += line1[a][b].rgbtBlue;
-//                Averege.rgbtGreen += line1[a][b].rgbtGreen;
-//                Averege.rgbtRed += line1[a][b].rgbtRed;
-//            }
-//        Averege.rgbtBlue /= count;
-//        Averege.rgbtGreen /= count;
-//        Averege.rgbtRed /= count;
-//        line2[0][i] = Averege;
+//        for (int i = 0; i < Add; ++i) {
+//            Averege.rgbtBlue += line1[3 * i* WightInPix +j];
+//            Averege.rgbtGreen += line1[3 * i * lenghtInBytes + j+1];
+//            Averege.rgbtRed += line1[3 * i * lenghtInBytes + j+2];
+//        }
+//        Averege.rgbtBlue /= Add;
+//        Averege.rgbtGreen /= Add;
+//        Averege.rgbtRed /= Add;
+//        line2[3 * j] = Averege.rgbtBlue;
+//        line2[3 * j + 1] = Averege.rgbtGreen;
+//        line2[3 * j + 2] = Averege.rgbtRed;
 //    }
-//    if (AAA) {
-//        int count = numColumn * numLine;
-//        for (int a = 0; a < numLine; ++a)
-//            for (int b = 0; b < numColumn; ++b) {
-//                Averege.rgbtBlue += line1[a][b].rgbtBlue;
-//                Averege.rgbtGreen += line1[a][b].rgbtGreen;
-//                Averege.rgbtRed += line1[a][b].rgbtRed;
-//            }
-//        Averege.rgbtBlue /= count;
-//        Averege.rgbtGreen /= count;
-//        Averege.rgbtRed /= count;
-//        line2[0][biWidth] = Averege;
-//    }
+//    fwrite(line2, lenghtForF2, 1, f2.getF());
+//    //return line2;
 //}
-
-class Line2 {
-public:
-    RGBTRIPLE* line = NULL;
-    int Add;
-    Line2(size_t n) {//конструктор line2
-        line = new RGBTRIPLE[n];
-        this->Add = 1;
-    };
-    RGBTRIPLE operator[](int i) {
-        return line[i];
-    };
-    RGBTRIPLE* data() {
-        return line;
-    }
-    ~Line2() {
-        delete[] line;
-        line = NULL;
-    };
-};
-
-class Line {
-public:
-    RGBTRIPLE** line = NULL;
-    int Add;
-    Line(size_t n, int Add) {//конструктор line1
-        line = new RGBTRIPLE * [Add];
-        for (int i = 0; i < Add; ++i)
-            line[i] = new RGBTRIPLE[n];
-        this->Add = Add;
-    };
-    //Line(size_t n) {//конструктор line2
-    //    line = new RGBTRIPLE * [1];
-    //    line[0] = new RGBTRIPLE[n];
-    //    this->Add = 1;
-    //};
-    RGBTRIPLE* operator[](int i) {
-        return line[i];
-    };
-    RGBTRIPLE** data() {
-        return line;
-    }
-    RGBTRIPLE data(int a, int b) {
-        return line[a][b];
-    }
-    ~Line() {
-        for (int i = 0; i < Add; ++i)
-            delete[] line[i];
-        delete[] line;
-        line = NULL;
-    };
-};
-
-void CreateLine2(Line line1, Line2 line2, int Add, LONG biWidth, int AAA, int num) {
-    RGBTRIPLE Averege;
-    int count=Add*Add;
-    for (int i = 0; i < biWidth-AAA; ++i) {
-        Averege.rgbtBlue = 0;
-        Averege.rgbtGreen = 0;
-        Averege.rgbtRed = 0;
-        for (int a = 0; a < Add; ++a)
-            for (int b = 0; b < Add; ++b){
-                Averege.rgbtBlue += line1.data(a,b).rgbtBlue;
-                Averege.rgbtGreen += line1.data(a, b).rgbtGreen;
-                Averege.rgbtRed += line1.data(a, b).rgbtRed;
-            }
-        Averege.rgbtBlue /= count;
-        Averege.rgbtGreen /= count;
-        Averege.rgbtRed /= count;
-        line2[i] = Averege;
-    }
-    if (AAA){
-        int count = Add * num;
-        for (int a = 0; a < num; ++a)
-            for (int b = 0; b < Add; ++b) {
-                Averege.rgbtBlue += line1[a][b].rgbtBlue;
-                Averege.rgbtGreen += line1[a][b].rgbtGreen;
-                Averege.rgbtRed += line1[a][b].rgbtRed;
-            }
-        Averege.rgbtBlue /= count;
-        Averege.rgbtGreen /= count;
-        Averege.rgbtRed /= count;
-        line2[biWidth] = Averege;
-    }
-}
-
-void CreateLastLine2(Line line1, Line2 line2, int Add, LONG biWidth, int AAA, int numLine, int numColumn) {
-    RGBTRIPLE Averege;
-    int count = numColumn * Add;
-    for (int i = 0; i < biWidth - AAA; ++i) {
-        Averege.rgbtBlue = 0;
-        Averege.rgbtGreen = 0;
-        Averege.rgbtRed = 0;
-        for (int a = 0; a < numLine; ++a)
-            for (int b = 0; b < Add; ++b){
-                Averege.rgbtBlue += line1[a][b].rgbtBlue;
-                Averege.rgbtGreen += line1[a][b].rgbtGreen;
-                Averege.rgbtRed += line1[a][b].rgbtRed;
-            }
-        Averege.rgbtBlue /= count;
-        Averege.rgbtGreen /= count;
-        Averege.rgbtRed /= count;
-        line2[i] = Averege;
-    }
-    if (AAA) {
-        int count = numColumn * numLine;
-        for (int a = 0; a < numLine; ++a)
-            for (int b = 0; b < numColumn; ++b) {
-                Averege.rgbtBlue += line1[a][b].rgbtBlue;
-                Averege.rgbtGreen += line1[a][b].rgbtGreen;
-                Averege.rgbtRed += line1[a][b].rgbtRed;
-            }
-        Averege.rgbtBlue /= count;
-        Averege.rgbtGreen /= count;
-        Averege.rgbtRed /= count;
-        line2[biWidth] = Averege;
-    }
-}
 
 int main() {
-
     setlocale(LC_ALL, "Russian");
 
     BITMAPFILEHEADER bfh;
     BITMAPINFOHEADER bih;
+    RGBTRIPLE rgb;
+
     pad padding;
 
     int Add = 1;
@@ -264,62 +168,77 @@ int main() {
     FileWithDes f1("pic1.bmp", "rb");
     FileWithDes f2("pic2.bmp", "wb");
 
+    cout << "пожалуйста, введите количество пикселей, которые будут объеденены в 1 (сторона квадратной области)\nпока что не обрабатывает последнюю строку и столбец\n";
+    cin >> Add;
+
     fread(&bfh, sizeof(bfh), 1, f1.getF());
     fread(&bih, sizeof(bih), 1, f1.getF());
 
-    cout << "пожалуйста, введите количество пикселей, которые будут объеденены в 1 (сторона квадратной области)\n";
-    cin >> Add;
-
     if ((Add + 1 > bih.biWidth) || (Add + 1 > bih.biHeight))
     {
-        cout << "количество пропускаемых символов слишком большое";
+        cout << "количество обьединяемых пикселей слишком большое (изображение сожмется в картинку 1*1)";
         return 0;
     }
 
     cout << "было: " << bih.biHeight << "*" << bih.biWidth << endl;
 
-    int AAA = (bih.biWidth % Add) ? 1 : 0;//вероятно, стоит убрать ?: для оптимизации
     LONG WIGTH = bih.biWidth;
     bih.biWidth /= Add;
-    bih.biWidth += AAA;
     LONG HEIGHT = bih.biHeight;
     bih.biHeight /= Add;
-    bih.biHeight += (bih.biHeight % Add) ? 1 : 0;//вероятно, стоит убрать ?: для оптимизации
     DWORD SIZE = bih.biSizeImage;
-    bih.biSizeImage = bih.biWidth * bih.biHeight;
+    bih.biSizeImage /= Add * Add;
 
     cout << "стало: " << bih.biHeight << "*" << bih.biWidth << endl;
 
     padding.before = (4 - (WIGTH * 3) % 4) % 4;
     padding.after = (4 - (bih.biWidth * 3) % 4) % 4;
-
-    cout << "padding.before: " << padding.before << endl;
-    cout << "padding.after: " << padding.after << endl;
-
-    bfh.bfSize = sizeof(bfh) + sizeof(bih) + bih.biSizeImage * 3 + padding.after * bih.biHeight * 3;
+    bfh.bfSize = sizeof(bfh) + sizeof(bih) + bih.biSizeImage * sizeof(rgb) + padding.after * bih.biHeight * sizeof(rgb);
 
     fwrite(&bfh, sizeof(bfh), 1, f2.getF());
     fwrite(&bih, sizeof(bih), 1, f2.getF());
 
-    Line line1(WIGTH /** 3*/, Add);//в пикселях
-    Line2 line2(bih.biWidth /** 3 + padding.after*/);
+    Line line1((WIGTH * 3 + padding.before) * Add);
+    Line line2(bih.biWidth * 3 + padding.after);//больше здесь нет паддинга
 
-    //memset(&line2 + (bih.biWidth /** 3*/)*Add, 0, padding.after * sizeof(BYTE));//устанавливает выравнивание 0. sizeof(BYTE)==1?//теперь выравнивания нет, потому что храним стуктуры а не байты
+    memset(line2.data() + bih.biWidth * 3, 0, padding.after * sizeof(BYTE));//паддинг line2 черный
 
-    fseek(f1.getF(), bfh.bfOffBits, SEEK_SET);//на начало чтения
-    BYTE trash = 0;//мусор для выравнивания
-    for (int i = 0; i < HEIGHT/Add; ++i) {
-        for (int j = 0; j < Add; ++j) {
-            fread(line1.data(), WIGTH * 3, 1, f1.getF());//считали line 1
+    BYTE trash = 0;//мусорные данные для выравнивания
+
+    fseek(f1.getF(), bfh.bfOffBits, SEEK_SET);//что за исключение тут?//при повторных запусках не появляется
+
+    cout << "padding.before: " << padding.before << endl;
+    cout << "padding.after: " << padding.after << endl;
+
+    double AveregeB;
+    double AveregeG;
+    double AveregeR;
+    for (int i = 0; i < HEIGHT / Add; ++i) {
+        fread(line1.data(), (WIGTH * 3 + padding.before) * Add, 1, f1.getF());
+
+        for (int i = 0; i < bih.biWidth; ++i) {
+            AveregeB = 0;
+            AveregeG = 0;
+            AveregeR = 0;
+            for (int j = 0; j < Add; ++j) {
+                for (int k = 0; k < Add; ++k) {
+                    AveregeB += line1[j * (WIGTH * 3 + padding.before) + (i * Add + k) * 3];
+                    AveregeG += line1[j * (WIGTH * 3 + padding.before) + (i * Add + k) * 3 + 1];
+                    AveregeR += line1[j * (WIGTH * 3 + padding.before) + (i * Add + k) * 3 + 2];
+                }
+            }
+            AveregeB /= Add;
+            AveregeG /= Add;
+            AveregeR /= Add;
+            line2.data()[i * 3] = byte(AveregeB + 0.5);
+            line2.data()[i * 3 + 1] = byte(AveregeG + 0.5);
+            line2.data()[i * 3 + 2] = byte(AveregeR + 0.5);
         }
-        CreateLine2(line1, line2, Add, bih.biWidth, AAA, bih.biWidth % Add);
-        fwrite(line2.data(), bih.biWidth * 3 /*+ padding.after*/, 1, f2.getF());
-        fwrite(&trash, padding.after, 1, f2.getF());
-    }
-    if(bih.biHeight % Add){
-        CreateLastLine2(line1, line2, Add, bih.biWidth, AAA, bih.biWidth % Add, bih.biHeight % Add);
         fwrite(line2.data(), bih.biWidth * 3 + padding.after, 1, f2.getF());
-        fwrite(&trash, padding.after, 1, f2.getF());
+        //line2=CreateLine2(line1.data(), line2.data(), Add, bih.biWidth, f2, (WIGTH) * 3 + padding.before);
+        //CreateLine2(line1.data(), line2.data(), Add, bih.biWidth, f2, (WIGTH) * 3 + padding.before, bih.biWidth * 3 + padding.after);
+        //fwrite(line2.data(), bih.biWidth * 3 + padding.after, 1, f2.getF());
     }
+
     return 0;
 }
