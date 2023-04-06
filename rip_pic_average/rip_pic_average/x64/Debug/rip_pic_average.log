@@ -1,6 +1,5 @@
 ﻿  Source.cpp
-C:\Users\Наталья\Desktop\работа\rip_pic_average\rip_pic_average\rip_pic_average\Source.cpp(196,120): warning C4267: =: преобразование из "size_t" в "DWORD"; возможна потеря данных
-C:\Users\Наталья\Desktop\работа\rip_pic_average\rip_pic_average\rip_pic_average\Source.cpp(225,91): warning C4267: аргумент: преобразование из "size_t" в "int"; возможна потеря данных
-C:\Users\Наталья\Desktop\работа\rip_pic_average\rip_pic_average\rip_pic_average\Source.cpp(226,95): warning C4267: аргумент: преобразование из "size_t" в "int"; возможна потеря данных
-C:\Users\Наталья\Desktop\работа\rip_pic_average\rip_pic_average\rip_pic_average\Source.cpp(227,95): warning C4267: аргумент: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\Наталья\Desktop\работа\rip_pic_average\rip_pic_average\rip_pic_average\Source.cpp(138,100): warning C4267: =: преобразование из "size_t" в "DWORD"; возможна потеря данных
+C:\Users\Наталья\Desktop\работа\rip_pic_average\rip_pic_average\rip_pic_average\Source.cpp(174,5): warning C4267: аргумент: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\Наталья\Desktop\работа\rip_pic_average\rip_pic_average\rip_pic_average\Source.cpp(96,15): warning C4101: rgb: неиспользованная локальная переменная
   rip_pic_average.vcxproj -> C:\Users\Наталья\Desktop\работа\rip_pic_average\rip_pic_average\x64\Debug\rip_pic_average.exe

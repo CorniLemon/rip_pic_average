@@ -1,0 +1,11 @@
+﻿  Source.cpp
+C:\Users\Наталья\Desktop\работа\rip_pic_average\rip_pic_average\rip_pic_average\Source.cpp(136,100): warning C4267: =: преобразование из "size_t" в "DWORD"; возможна потеря данных
+C:\Users\Наталья\Desktop\работа\rip_pic_average\rip_pic_average\rip_pic_average\Source.cpp(174,5): warning C4267: аргумент: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\Наталья\Desktop\работа\rip_pic_average\rip_pic_average\rip_pic_average\Source.cpp(192,5): warning C4267: аргумент: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\Наталья\Desktop\работа\rip_pic_average\rip_pic_average\rip_pic_average\Source.cpp(94,15): warning C4101: rgb: неиспользованная локальная переменная
+  Создание кода
+  2 of 27 functions ( 7.4%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  Создание кода завершено
+  rip_pic_average.vcxproj -> C:\Users\Наталья\Desktop\работа\rip_pic_average\rip_pic_average\x64\Release\rip_pic_average.exe

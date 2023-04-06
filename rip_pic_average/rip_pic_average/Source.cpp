@@ -39,6 +39,7 @@ class Line {
 public:
     Line(size_t n) {
         line = new BYTE[n];
+        //line = malloc(n+1);
     };
 
     BYTE* data() {
@@ -53,106 +54,39 @@ public:
     }
 
     ~Line() {
-        delete[] line;
+        if(line)
+        {
+            delete[] line;//падает при add = 3,4,7,8,9,10,11,12
+        }
         line = NULL;
     };
 };
 
-//class Pixel {
-//    BYTE* line;
-//    size_t ch;
-//public:
-//    Pixel(BYTE* line, size_t ch)
-//        : line(line),
-//        ch(ch)
-//    {
-//    }
-//
-//    BYTE& operator[] (int k) {
-//        return line[k];
-//    }
-//};
-//
 //class Line {
-//    BYTE* line;
-//    size_t w, ch;
+//    void* line = NULL;
 //public:
-//    Line(BYTE *line, size_t w, size_t ch)
-//        : line(line),
-//        w(w), ch(ch)
-//    {
-//    }
+//    Line(size_t n) {
+//        //line = new BYTE[n];
+//        line = malloc(n + 1);
+//    };
 //
-//    Pixel operator[] (int j) {
-//        return Pixel(line + j * ch, ch);
-//    }
-//};
-//
-//class Matr {
-//    BYTE* line = NULL;
-//    size_t h, w, ch;
-//public:
-//    Matr(size_t h, size_t w, size_t ch)
-//        : line(new BYTE[h * w * ch]),
-//        h(h), w(w), ch(ch)
-//    {
-//    }
-//
-//    BYTE* data() {
+//    void* data() {
 //        return line;
-//    }
+//    };
 //
 //    void operator= (BYTE* line1) {
 //        line = line1;
 //    }
-//    Line operator[] (int i) {
-//        return Line(line + i * w * ch, w, ch);
+//    void& operator[] (int i) {
+//        return line[i];
 //    }
 //
-//    BYTE& at(size_t i, size_t j, size_t k)
-//    {
-//        return line[(i * w + j) * ch + k];
-//    }
-//
-//    ~Matr() {
-//        delete[] line;
+//    ~Line() {
+//        if (line)
+//            delete[] line;//падает при add = 3,4,7,8,9,10,11,12
 //        line = NULL;
-//    }
-//
-//    operator void* ()
-//    {
-//        return line;
-//    }
+//    };
 //};
-
-//void f()
-//{
-//    Matr m(100, 50, 3);
-//    m[0][0][0] = 5;
-//    fread(m, ...);
-//}
-
-//void CreateLine2(BYTE* line1, BYTE* line2, int Add, int WightInPix, FileWithDes f2, int lenghtInBytes, int lenghtForF2) {
-//    RGBTRIPLE Averege;
-//    for (int j = 0; j < WightInPix; ++j) {//скорее всего косяк здесь
-//        Averege.rgbtBlue = 0;
-//        Averege.rgbtGreen = 0;
-//        Averege.rgbtRed = 0;
-//        for (int i = 0; i < Add; ++i) {
-//            Averege.rgbtBlue += line1[3 * i* WightInPix +j];
-//            Averege.rgbtGreen += line1[3 * i * lenghtInBytes + j+1];
-//            Averege.rgbtRed += line1[3 * i * lenghtInBytes + j+2];
-//        }
-//        Averege.rgbtBlue /= Add;
-//        Averege.rgbtGreen /= Add;
-//        Averege.rgbtRed /= Add;
-//        line2[3 * j] = Averege.rgbtBlue;
-//        line2[3 * j + 1] = Averege.rgbtGreen;
-//        line2[3 * j + 2] = Averege.rgbtRed;
-//    }
-//    fwrite(line2, lenghtForF2, 1, f2.getF());
-//    //return line2;
-//}
 
 int main() {
     setlocale(LC_ALL, "Russian");
@@ -165,10 +99,10 @@ int main() {
 
     int Add = 1;
 
-    FileWithDes f1("pic1.bmp", "rb");
+    FileWithDes f1("pic3.bmp", "rb");
     FileWithDes f2("pic2.bmp", "wb");
 
-    cout << "пожалуйста, введите количество пикселей, которые будут объеденены в 1 (сторона квадратной области)\nпока что не обрабатывает последнюю строку и столбец\n";
+    cout << "пожалуйста, введите количество пикселей, которые будут объеденены в 1 (сторона квадратной области)\n";
     cin >> Add;
 
     fread(&bfh, sizeof(bfh), 1, f1.getF());
@@ -183,27 +117,33 @@ int main() {
     cout << "было: " << bih.biHeight << "*" << bih.biWidth << endl;
 
     LONG WIGTH = bih.biWidth;
-    bih.biWidth /= Add;
+    int WOst = bih.biWidth % Add;
+    cout<<"wost " << WOst << endl;
+    bih.biWidth = bih.biWidth / Add;
+    if (WOst) ++bih.biWidth;
+
     LONG HEIGHT = bih.biHeight;
-    bih.biHeight /= Add;
+    int HOst = bih.biHeight % Add;
+    cout<<"host " << HOst << endl;
+    bih.biHeight = bih.biHeight / Add;
+    if (HOst) ++bih.biHeight;
+
     DWORD SIZE = bih.biSizeImage;
-    bih.biSizeImage /= Add * Add;
+    bih.biSizeImage = bih.biHeight* bih.biWidth;
 
     cout << "стало: " << bih.biHeight << "*" << bih.biWidth << endl;
 
     padding.before = (4 - (WIGTH * 3) % 4) % 4;
     padding.after = (4 - (bih.biWidth * 3) % 4) % 4;
-    bfh.bfSize = sizeof(bfh) + sizeof(bih) + bih.biSizeImage * sizeof(rgb) + padding.after * bih.biHeight * sizeof(rgb);
+    bfh.bfSize = sizeof(bfh) + sizeof(bih) + bih.biSizeImage * 3 + padding.after * bih.biHeight * 3;
 
     fwrite(&bfh, sizeof(bfh), 1, f2.getF());
     fwrite(&bih, sizeof(bih), 1, f2.getF());
 
     Line line1((WIGTH * 3 + padding.before) * Add);
     Line line2(bih.biWidth * 3 + padding.after);//больше здесь нет паддинга
-
+    
     memset(line2.data() + bih.biWidth * 3, 0, padding.after * sizeof(BYTE));//паддинг line2 черный
-
-    BYTE trash = 0;//мусорные данные для выравнивания
 
     fseek(f1.getF(), bfh.bfOffBits, SEEK_SET);//что за исключение тут?//при повторных запусках не появляется
 
@@ -213,31 +153,51 @@ int main() {
     double AveregeB;
     double AveregeG;
     double AveregeR;
+
+    auto CreatePixel = [&](int allowH, int allowW, int position) {
+        AveregeB = 0;
+        AveregeG = 0;
+        AveregeR = 0;
+        for (int j = 0; j < allowH; ++j) {
+            for (int k = 0; k < allowW; ++k) {
+                AveregeB += line1[j * (WIGTH * 3 + padding.before) + (position * Add + k) * 3];
+                AveregeG += line1[j * (WIGTH * 3 + padding.before) + (position * Add + k) * 3 + 1];
+                AveregeR += line1[j * (WIGTH * 3 + padding.before) + (position * Add + k) * 3 + 2];
+            }
+        }
+        AveregeB /= Add;
+        AveregeG /= Add;
+        AveregeR /= Add;
+        line2.data()[position * 3] = byte(AveregeB + 0.5);
+        line2.data()[position * 3 + 1] = byte(AveregeG + 0.5);
+        line2.data()[position * 3 + 2] = byte(AveregeR + 0.5);
+    };
+
+    auto CreateLine2 = [&](int h1, int w2) {//создает розовый, желтый и зелёный
+        for (int i = 0; i < w2; ++i) {
+            CreatePixel(h1, Add, i);
+        }
+    };
+    auto CreateLastPIxelInLine2 = [&](int h1, int wl2) {//сщздает розовый, желтый и зелёный
+        CreatePixel(h1, wl2, bih.biWidth);
+    };
+    auto CreateAllLine2 = [&](int h1, int w2, int wl2) {
+        CreateLine2(h1, w2);
+        if (WOst)
+        {
+            CreateLastPIxelInLine2(h1, wl2);
+        }
+    };
+
     for (int i = 0; i < HEIGHT / Add; ++i) {
         fread(line1.data(), (WIGTH * 3 + padding.before) * Add, 1, f1.getF());
-
-        for (int i = 0; i < bih.biWidth; ++i) {
-            AveregeB = 0;
-            AveregeG = 0;
-            AveregeR = 0;
-            for (int j = 0; j < Add; ++j) {
-                for (int k = 0; k < Add; ++k) {
-                    AveregeB += line1[j * (WIGTH * 3 + padding.before) + (i * Add + k) * 3];
-                    AveregeG += line1[j * (WIGTH * 3 + padding.before) + (i * Add + k) * 3 + 1];
-                    AveregeR += line1[j * (WIGTH * 3 + padding.before) + (i * Add + k) * 3 + 2];
-                }
-            }
-            AveregeB /= Add;
-            AveregeG /= Add;
-            AveregeR /= Add;
-            line2.data()[i * 3] = byte(AveregeB + 0.5);
-            line2.data()[i * 3 + 1] = byte(AveregeG + 0.5);
-            line2.data()[i * 3 + 2] = byte(AveregeR + 0.5);
-        }
+        CreateAllLine2(Add, bih.biWidth, WOst);
         fwrite(line2.data(), bih.biWidth * 3 + padding.after, 1, f2.getF());
-        //line2=CreateLine2(line1.data(), line2.data(), Add, bih.biWidth, f2, (WIGTH) * 3 + padding.before);
-        //CreateLine2(line1.data(), line2.data(), Add, bih.biWidth, f2, (WIGTH) * 3 + padding.before, bih.biWidth * 3 + padding.after);
-        //fwrite(line2.data(), bih.biWidth * 3 + padding.after, 1, f2.getF());
+    }
+    if (HOst)
+    {
+        CreateAllLine2(HOst, bih.biWidth, WOst);
+        fwrite(line2.data(), bih.biWidth * 3 + padding.after, 1, f2.getF());
     }
 
     return 0;
