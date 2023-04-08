@@ -35,11 +35,16 @@ public:
 };
 
 class Line {
+    size_t n = 0;
     BYTE* line = NULL;
 public:
-    Line(size_t n) {
-        line = new BYTE[n];
-        //line = malloc(n+1);
+    Line(size_t n)
+        :n(n), line(new BYTE[n])
+    {};
+
+    Line(BYTE* line1)
+    {
+        line = line1;
     };
 
     BYTE* data() {
@@ -50,43 +55,21 @@ public:
         line = line1;
     }
     BYTE& operator[] (int i) {
+        if (i < 0 || i >= n)
+            throw 1;
         return line[i];
     }
 
     ~Line() {
         if(line)
         {
-            delete[] line;//падает при add = 3,4,7,8,9,10,11,12
+            delete[] line;//[] не вли€ют на ошибку
         }
+        //падает при add = 3,4,7,8,9,10,11,12  на 17*13
+        //падает при add = 3,5,7,9,10,11...  на 256*256
         line = NULL;
     };
 };
-
-//class Line {
-//    void* line = NULL;
-//public:
-//    Line(size_t n) {
-//        //line = new BYTE[n];
-//        line = malloc(n + 1);
-//    };
-//
-//    void* data() {
-//        return line;
-//    };
-//
-//    void operator= (BYTE* line1) {
-//        line = line1;
-//    }
-//    void& operator[] (int i) {
-//        return line[i];
-//    }
-//
-//    ~Line() {
-//        if (line)
-//            delete[] line;//падает при add = 3,4,7,8,9,10,11,12
-//        line = NULL;
-//    };
-//};
 
 int main() {
     setlocale(LC_ALL, "Russian");
@@ -99,7 +82,7 @@ int main() {
 
     int Add = 1;
 
-    FileWithDes f1("pic3.bmp", "rb");
+    FileWithDes f1("pic1.bmp", "rb");
     FileWithDes f2("pic2.bmp", "wb");
 
     cout << "пожалуйста, введите количество пикселей, которые будут объеденены в 1 (сторона квадратной области)\n";
@@ -118,19 +101,19 @@ int main() {
 
     LONG WIGTH = bih.biWidth;
     int WOst = bih.biWidth % Add;
-    cout<<"wost " << WOst << endl;
     bih.biWidth = bih.biWidth / Add;
     if (WOst) ++bih.biWidth;
 
     LONG HEIGHT = bih.biHeight;
     int HOst = bih.biHeight % Add;
-    cout<<"host " << HOst << endl;
     bih.biHeight = bih.biHeight / Add;
     if (HOst) ++bih.biHeight;
 
     DWORD SIZE = bih.biSizeImage;
     bih.biSizeImage = bih.biHeight* bih.biWidth;
 
+    cout<<"host " << HOst << endl;
+    cout<<"wost " << WOst << endl;
     cout << "стало: " << bih.biHeight << "*" << bih.biWidth << endl;
 
     padding.before = (4 - (WIGTH * 3) % 4) % 4;
@@ -154,7 +137,8 @@ int main() {
     double AveregeG;
     double AveregeR;
 
-    auto CreatePixel = [&](int allowH, int allowW, int position) {
+    auto CreatePixel = [&](int allowH, int allowW, int position) {//создаЄт каждый отдельный пиксель
+        int count = allowH * allowW;
         AveregeB = 0;
         AveregeG = 0;
         AveregeR = 0;
@@ -165,40 +149,40 @@ int main() {
                 AveregeR += line1[j * (WIGTH * 3 + padding.before) + (position * Add + k) * 3 + 2];
             }
         }
-        AveregeB /= Add;
-        AveregeG /= Add;
-        AveregeR /= Add;
+        AveregeB /= count;
+        AveregeG /= count;
+        AveregeR /= count;
         line2.data()[position * 3] = byte(AveregeB + 0.5);
         line2.data()[position * 3 + 1] = byte(AveregeG + 0.5);
         line2.data()[position * 3 + 2] = byte(AveregeR + 0.5);
     };
 
-    auto CreateLine2 = [&](int h1, int w2) {//создает розовый, желтый и зелЄный
+    auto CreateLine2 = [&](int h1, int w2) {//создаЄт всю строку кроме остатка
         for (int i = 0; i < w2; ++i) {
             CreatePixel(h1, Add, i);
         }
     };
-    auto CreateLastPIxelInLine2 = [&](int h1, int wl2) {//сщздает розовый, желтый и зелЄный
-        CreatePixel(h1, wl2, bih.biWidth);
-    };
-    auto CreateAllLine2 = [&](int h1, int w2, int wl2) {
-        CreateLine2(h1, w2);
+    auto CreateAllLine2 = [&](int h1) {
         if (WOst)
         {
-            CreateLastPIxelInLine2(h1, wl2);
+            CreateLine2(h1, bih.biWidth - 1);//без -1 выходит лучше, хот€ по идее не правильно
+            CreatePixel(h1, WOst, bih.biWidth - 1);//последний пиксель в строке
+        }
+        else
+        {
+            CreateLine2(h1, bih.biWidth);//создаЄт всю строку
         }
     };
 
     for (int i = 0; i < HEIGHT / Add; ++i) {
         fread(line1.data(), (WIGTH * 3 + padding.before) * Add, 1, f1.getF());
-        CreateAllLine2(Add, bih.biWidth, WOst);
+        CreateAllLine2(Add);
         fwrite(line2.data(), bih.biWidth * 3 + padding.after, 1, f2.getF());
     }
     if (HOst)
     {
-        CreateAllLine2(HOst, bih.biWidth, WOst);
+        CreateAllLine2(HOst);
         fwrite(line2.data(), bih.biWidth * 3 + padding.after, 1, f2.getF());
     }
-
     return 0;
 }
