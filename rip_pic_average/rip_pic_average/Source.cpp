@@ -2,11 +2,13 @@
 #include <iostream>
 #include <Windows.h>
 using namespace std;
+#include <stdint.h>
 
 typedef unsigned __int16 WORD;//2 байта
 //typedef unsigned int DWORD;//4 байта
 typedef long LONG;//4 байта
 typedef unsigned char BYTE;//1 байт
+//uint16_t
 
 struct pad {
     size_t before = 0;
@@ -51,22 +53,17 @@ public:
         return line;
     };
 
-    void operator= (BYTE* line1) {
-        line = line1;
-    }
     BYTE& operator[] (int i) {
-        if (i < 0 || i >= n)
-            throw 1;
+        /*if (i < 0 || i >= n)
+            throw 1;*/
         return line[i];
     }
 
     ~Line() {
         if(line)
         {
-            delete[] line;//[] не вли€ют на ошибку
+            delete[] line;
         }
-        //падает при add = 3,4,7,8,9,10,11,12  на 17*13
-        //падает при add = 3,5,7,9,10,11...  на 256*256
         line = NULL;
     };
 };
@@ -82,10 +79,10 @@ int main() {
 
     int Add = 1;
 
-    FileWithDes f1("pic1.bmp", "rb");
+    FileWithDes f1("pic11.bmp", "rb");
     FileWithDes f2("pic2.bmp", "wb");
 
-    cout << "пожалуйста, введите количество пикселей, которые будут объеденены в 1 (сторона квадратной области)\n";
+    cout << "пожалуйста, введите количество пикселей, которые будут объединены в 1 (сторона квадратной области)\n";
     cin >> Add;
 
     fread(&bfh, sizeof(bfh), 1, f1.getF());
@@ -93,7 +90,7 @@ int main() {
 
     if ((Add + 1 > bih.biWidth) || (Add + 1 > bih.biHeight))
     {
-        cout << "количество обьедин€емых пикселей слишком большое (изображение сожметс€ в картинку 1*1)";
+        cout << "количество объедин€емых пикселей слишком большое (изображение сожметс€ в картинку 1*1)";
         return 0;
     }
 
@@ -124,37 +121,37 @@ int main() {
     fwrite(&bih, sizeof(bih), 1, f2.getF());
 
     Line line1((WIGTH * 3 + padding.before) * Add);
-    Line line2(bih.biWidth * 3 + padding.after);//больше здесь нет паддинга
+    Line line2(bih.biWidth * 3 + padding.after);
     
     memset(line2.data() + bih.biWidth * 3, 0, padding.after * sizeof(BYTE));//паддинг line2 черный
 
-    fseek(f1.getF(), bfh.bfOffBits, SEEK_SET);//что за исключение тут?//при повторных запусках не по€вл€етс€
+    fseek(f1.getF(), bfh.bfOffBits, SEEK_SET);
 
     cout << "padding.before: " << padding.before << endl;
     cout << "padding.after: " << padding.after << endl;
 
-    double AveregeB;
-    double AveregeG;
-    double AveregeR;
+    double AverageB;
+    double AverageG;
+    double AverageR;
 
     auto CreatePixel = [&](int allowH, int allowW, int position) {//создаЄт каждый отдельный пиксель
         int count = allowH * allowW;
-        AveregeB = 0;
-        AveregeG = 0;
-        AveregeR = 0;
+        AverageB = 0;
+        AverageG = 0;
+        AverageR = 0;
         for (int j = 0; j < allowH; ++j) {
             for (int k = 0; k < allowW; ++k) {
-                AveregeB += line1[j * (WIGTH * 3 + padding.before) + (position * Add + k) * 3];
-                AveregeG += line1[j * (WIGTH * 3 + padding.before) + (position * Add + k) * 3 + 1];
-                AveregeR += line1[j * (WIGTH * 3 + padding.before) + (position * Add + k) * 3 + 2];
+                AverageB += line1[j * (WIGTH * 3 + padding.before) + (position * Add + k) * 3];
+                AverageG += line1[j * (WIGTH * 3 + padding.before) + (position * Add + k) * 3 + 1];
+                AverageR += line1[j * (WIGTH * 3 + padding.before) + (position * Add + k) * 3 + 2];
             }
         }
-        AveregeB /= count;
-        AveregeG /= count;
-        AveregeR /= count;
-        line2.data()[position * 3] = byte(AveregeB + 0.5);
-        line2.data()[position * 3 + 1] = byte(AveregeG + 0.5);
-        line2.data()[position * 3 + 2] = byte(AveregeR + 0.5);
+        AverageB /= count;
+        AverageG /= count;
+        AverageR /= count;
+        line2.data()[position * 3] = byte(AverageB + 0.5);
+        line2.data()[position * 3 + 1] = byte(AverageG + 0.5);
+        line2.data()[position * 3 + 2] = byte(AverageR + 0.5);
     };
 
     auto CreateLine2 = [&](int h1, int w2) {//создаЄт всю строку кроме остатка
@@ -162,10 +159,11 @@ int main() {
             CreatePixel(h1, Add, i);
         }
     };
+
     auto CreateAllLine2 = [&](int h1) {
         if (WOst)
         {
-            CreateLine2(h1, bih.biWidth - 1);//без -1 выходит лучше, хот€ по идее не правильно
+            CreateLine2(h1, bih.biWidth - 1);//создаЄт всю строку кроме последнего пиксел€
             CreatePixel(h1, WOst, bih.biWidth - 1);//последний пиксель в строке
         }
         else
